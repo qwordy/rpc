@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by huangsheng.hs on 2015/3/26.
@@ -19,9 +20,7 @@ public class ConsumerBuilder {
     static {
         try {
             consumer = (RpcConsumer) getConsumerImplClass().newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException|IllegalAccessException e) {
             e.printStackTrace();
         }
         if(consumer == null){
@@ -154,7 +153,7 @@ public class ConsumerBuilder {
 
     private static Class<?> getConsumerImplClass(){
         try {
-            return Class.forName("RpcConsumerImpl");
+            return Class.forName("com.yfy.rpc.api.impl.RpcConsumerImpl");
         } catch (ClassNotFoundException e) {
             System.out.println("Cannot found the class which must exist and override all RpcProvider's methods");
             e.printStackTrace();

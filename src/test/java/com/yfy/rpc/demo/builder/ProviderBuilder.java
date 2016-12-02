@@ -16,9 +16,7 @@ public class ProviderBuilder {
         RpcProvider rpcProvider = null;
         try {
             rpcProvider = (RpcProvider) getProviderImplClass().newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException|IllegalAccessException e) {
             e.printStackTrace();
         }
 
@@ -42,7 +40,7 @@ public class ProviderBuilder {
 
     private static Class<?> getProviderImplClass(){
         try {
-            return Class.forName("RpcProviderImpl");
+            return Class.forName("com.yfy.rpc.api.impl.RpcProviderImpl");
         } catch (ClassNotFoundException e) {
             System.out.println("Cannot found the class which must exist and override all RpcProvider's methods");
             e.printStackTrace();

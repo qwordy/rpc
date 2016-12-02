@@ -6,23 +6,30 @@ import com.yfy.rpc.api.RpcProvider;
  * Created by yfy on 16-11-30.
  */
 public class RpcProviderImpl extends RpcProvider {
+  private Class<?> serviceInterface;
+
+  private String version;
+
   public RpcProviderImpl() {
     super();
   }
 
   @Override
   public RpcProvider serviceInterface(Class<?> serviceInterface) {
-    return super.serviceInterface(serviceInterface);
+    this.serviceInterface = serviceInterface;
+    return this;
   }
 
   @Override
   public RpcProvider version(String version) {
-    return super.version(version);
+    this.version = version;
+    return this;
   }
 
   @Override
   public RpcProvider impl(Object serviceInstance) {
-    return super.impl(serviceInstance);
+
+    return this;
   }
 
   @Override
