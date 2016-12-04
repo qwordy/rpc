@@ -1,5 +1,6 @@
 package com.yfy.rpc.netty;
 
+import com.yfy.rpc.model.RpcRequest;
 import com.yfy.rpc.util.Util;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
@@ -19,7 +20,7 @@ public class RpcClient {
     startClient();
   }
 
-  public static ClientHandler startClient() {
+  public static Channel startClient() {
     ClientHandler handler = new ClientHandler();
     NioEventLoopGroup group = new NioEventLoopGroup();
     Bootstrap b = new Bootstrap();
@@ -28,19 +29,17 @@ public class RpcClient {
         .handler(new ChannelInitializer<SocketChannel>() {
           @Override
           protected void initChannel(SocketChannel ch) throws Exception {
-            ch.pipeline().addLast(new ResponseDecoder());
-            ch.pipeline().addLast(new RequestEncoder());
-            ch.pipeline().addLast(handler);
+            ch.pipeline().addLast(new ResponseDecoder())
+                .addLast(new RequestEncoder()).addLast(handler);
           }
         });
     //.option(ChannelOption.TCP_NODELAY, true);
     try {
       Channel channel = b.connect("localhost", 8888).sync().channel();
       if (channel == null) Util.log("null");
-      //channel.writeAndFlush(Unpooled.copiedBuffer("yyy", CharsetUtil.UTF_8)).await();
       //Util.log(Thread.currentThread());
-      //handler.send("hello");
-      return handler;
+      //channel.writeAndFlush(new RpcRequest());
+      return channel;
     } catch (Exception e) {
       e.printStackTrace();
       return null;

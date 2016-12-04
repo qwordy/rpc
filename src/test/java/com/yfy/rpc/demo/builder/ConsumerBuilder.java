@@ -47,7 +47,7 @@ public class ConsumerBuilder {
   @Test
   public void testNormalApiCall() throws Exception {
     apiService.addOne(4);
-    //Thread.sleep(1000);
+    Thread.sleep(2000);
 //    Assert.assertEquals(5, apiService.addOne(4));
 //    Assert.assertEquals("end", apiService.getList(Arrays.asList("123")).get(0));
 //    Assert.assertNotNull(apiService.getMap());

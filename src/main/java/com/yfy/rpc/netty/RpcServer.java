@@ -23,7 +23,8 @@ public class RpcServer {
         .childHandler(new ChannelInitializer<SocketChannel>() {
           @Override
           protected void initChannel(SocketChannel ch) throws Exception {
-            ch.pipeline().addLast(new ServerHandler());
+            ch.pipeline().addLast(new RequestDecoder())
+                .addLast(new ResponseEncoder()).addLast(new ServerHandler());
           }
         });
 //        .option(ChannelOption.SO_BACKLOG, 5)
