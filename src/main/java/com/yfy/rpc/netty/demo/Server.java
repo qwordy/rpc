@@ -1,4 +1,4 @@
-package com.yfy.rpc.netty;
+package com.yfy.rpc.netty.demo;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelOption;
@@ -15,10 +15,9 @@ public class Server {
     ServerBootstrap b = new ServerBootstrap();
     b.group(bossGroup, workerGroup)
         .channel(NioServerSocketChannel.class)
-        .childHandler(new ServerInitializer())
+        .childHandler(new ServerChannelInitializer())
         .option(ChannelOption.SO_BACKLOG, 5)
         .childOption(ChannelOption.SO_KEEPALIVE, true);
     b.bind(8888).sync();
   }
-
 }

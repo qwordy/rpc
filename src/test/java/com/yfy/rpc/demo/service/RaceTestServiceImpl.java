@@ -2,44 +2,54 @@ package com.yfy.rpc.demo.service;
 
 import com.yfy.rpc.context.RpcContext;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-/**
- * Created by huangsheng.hs on 2015/3/26.
- */
-public class RaceTestServiceImpl implements RaceTestService{
-    @Override
-    public Map<String, Object> getMap() {
-        Map<String,Object> newMap = new HashMap<String,Object>();
-        newMap.put("race","rpc");
-        if(RpcContext.getProps() != null );
-        newMap.putAll(RpcContext.getProps());
-        return newMap;
-    }
+public class RaceTestServiceImpl implements RaceTestService {
+  @Override
+  public Map<String, Object> getMap() {
+    Map<String, Object> newMap = new HashMap<String, Object>();
+    newMap.put("race", "rpc");
+    if (RpcContext.getProps() != null) ;
+    newMap.putAll(RpcContext.getProps());
+    return newMap;
+  }
 
-    @Override
-    public String getString() {
-        return "this is a rpc framework";
-    }
+  @Override
+  public String getString() {
+    return "this is a rpc framework";
+  }
 
-    @Override
-    public RaceDO getDO() {
-        return new RaceDO();
-    }
+  @Override
+  public RaceDO getDO() {
+    return new RaceDO();
+  }
 
-    @Override
-    public boolean longTimeMethod() {
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return true;
+  @Override
+  public boolean longTimeMethod() {
+    try {
+      Thread.sleep(5000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
+    return true;
+  }
 
-    @Override
-    public Integer throwException() throws RaceException{
-        throw new RaceException("just a exception");
-    }
+  @Override
+  public Integer throwException() throws RaceException {
+    throw new RaceException("just a exception");
+  }
+
+  @Override
+  public int addOne(int n) {
+    return n + 1;
+  }
+
+  @Override
+  public List<String> getList(List<String> list) {
+    list.add(0, "end");
+    return list;
+  }
 }

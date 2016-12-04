@@ -17,11 +17,11 @@
   </properties>
 
   <dependencies>
-    <!--<dependency>-->
-      <!--<groupId>com.alibaba.middleware.race</groupId>-->
-      <!--<artifactId>rpc-api</artifactId>-->
-      <!--<version>1.0</version>-->
-    <!--</dependency>-->
+    <dependency>
+        <groupId>com.esotericsoftware</groupId>
+        <artifactId>kryo</artifactId>
+        <version>4.0.0</version>
+    </dependency>
     <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
     <dependency>
       <groupId>io.netty</groupId>
