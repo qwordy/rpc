@@ -1,8 +1,10 @@
 package com.yfy.rpc.netty;
 
+import com.yfy.rpc.model.RpcRequest;
+import com.yfy.rpc.model.RpcResponse;
+import com.yfy.rpc.util.Util;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.*;
 
 import java.nio.charset.Charset;
 
@@ -13,10 +15,21 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
   private ChannelHandlerContext ctx;
 
+  private final byte[] lock = new byte[0];
+
+//  @Override
+//  protected void channelRead0(ChannelHandlerContext ctx, RpcResponse msg) throws Exception {
+//
+//  }
+
   @Override
   public void channelActive(ChannelHandlerContext ctx) throws Exception {
-    System.out.println("active");
+    //Util.log(Thread.currentThread());
     this.ctx = ctx;
+    synchronized (lock) {
+      lock.notify();
+    }
+    ctx.writeAndFlush(new RpcRequest()).await();
   }
 
   @Override
@@ -24,8 +37,13 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     super.channelRead(ctx, msg);
   }
 
-  public void send(String msg) {
-    System.out.println("send: " + msg);
-    ctx.writeAndFlush(Unpooled.copiedBuffer(msg, Charset.defaultCharset()));
+  public void send(Object msg) throws Exception {
+    if (ctx == null) {
+      synchronized (lock) {
+        if (ctx == null) lock.wait();
+      }
+    }
+    Util.log("send");
+    //ctx.channel().writeAndFlush(msg).awaitUninterruptibly();
   }
 }

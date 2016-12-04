@@ -6,6 +6,8 @@ public class RpcRequest {
   public Method method;
   public Object[] args;
 
+  public RpcRequest() {}
+
   public RpcRequest(Method method, Object[] args) {
     this.method = method;
     this.args = args;

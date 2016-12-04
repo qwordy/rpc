@@ -5,6 +5,7 @@ import com.yfy.rpc.async.ResponseCallbackListener;
 import com.yfy.rpc.model.RpcRequest;
 import com.yfy.rpc.netty.ClientHandler;
 import com.yfy.rpc.netty.RpcClient;
+import com.yfy.rpc.util.Util;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -81,7 +82,7 @@ public class RpcConsumer implements InvocationHandler {
    * @return
    */
   public Object instance() {
-    handler = RpcClient.startNewClient();
+    handler = RpcClient.startClient();
     return Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[]{this.interfaceClazz}, this);
   }
 
@@ -110,12 +111,12 @@ public class RpcConsumer implements InvocationHandler {
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-    new RpcRequest(method, args);
-    System.out.println(method.toGenericString());
-    handler.send(method.toGenericString());
+    RpcRequest request = new RpcRequest(method, args);
+    Util.log(method.toGenericString());
+    handler.send(request);
 //    for (Method m : proxy.getClass().getDeclaredMethods())
 //      System.out.println(m.getName());
-    return null;
+    return 1;
   }
 }
 
