@@ -16,35 +16,26 @@ import io.netty.util.CharsetUtil;
  * Created by yfy on 16-12-3.
  */
 public class RpcClient {
-  public static void main(String[] args) throws Exception {
-    startClient();
+  public static void main(String[] args) {
   }
 
-  public static Channel startClient() {
-    ClientHandler handler = new ClientHandler();
+  private static Bootstrap bootstrap;
+
+  static {
     NioEventLoopGroup group = new NioEventLoopGroup();
-    Bootstrap b = new Bootstrap();
-    b.group(group)
+    bootstrap = new Bootstrap();
+    bootstrap.group(group)
         .channel(NioSocketChannel.class)
         .handler(new ChannelInitializer<SocketChannel>() {
           @Override
           protected void initChannel(SocketChannel ch) throws Exception {
             ch.pipeline().addLast(new ResponseDecoder())
-                .addLast(new RequestEncoder()).addLast(handler);
+                .addLast(new RequestEncoder()).addLast(new ClientHandler());
           }
         });
-    //.option(ChannelOption.TCP_NODELAY, true);
-    try {
-      Channel channel = b.connect("localhost", 8888).sync().channel();
-      if (channel == null) Util.log("null");
-      //Util.log(Thread.currentThread());
-      //channel.writeAndFlush(new RpcRequest());
-      return channel;
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    } finally {
-      group.shutdownGracefully();
-    }
+  }
+
+  public static Channel connect() {
+    return bootstrap.connect("localhost", 8888).syncUninterruptibly().channel();
   }
 }

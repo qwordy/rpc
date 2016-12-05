@@ -1,5 +1,9 @@
 package com.yfy.rpc.util;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Output;
+import io.netty.buffer.ByteBuf;
+
 /**
  * Created by yfy on 16-12-4.
  */
@@ -8,12 +12,12 @@ public class Util {
     System.out.println(obj);
   }
 
-  public static byte[] int2byte(int n) {
-    byte[] b = new byte[4];
-    b[3] = (byte) (n >> 24);
-    b[2] = (byte) (n >> 16);
-    b[1] = (byte) (n >> 8);
-    b[0] = (byte) (n);
-    return b;
+  public static void serialize(Object obj, ByteBuf out) {
+    Kryo kryo = new Kryo();
+    Output output = new Output(1024, Integer.MAX_VALUE);
+    kryo.writeObject(output, obj);
+    Util.log("encode(" + output.position() + "): " + obj);
+    out.writeInt(output.position());
+    out.writeBytes(output.toBytes());
   }
 }

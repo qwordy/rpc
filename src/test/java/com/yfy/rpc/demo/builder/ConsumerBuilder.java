@@ -5,10 +5,8 @@ import com.yfy.rpc.async.ResponseFuture;
 import com.yfy.rpc.context.RpcContext;
 import com.yfy.rpc.demo.service.*;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Map;
 
 public class ConsumerBuilder {
@@ -44,15 +42,20 @@ public class ConsumerBuilder {
     return true;
   }
 
+  public static void main(String[] args) {
+    ConsumerBuilder builder = new ConsumerBuilder();
+    builder.testNormalApiCall();
+  }
+
   @Test
-  public void testNormalApiCall() throws Exception {
+  public void testNormalApiCall() {
     apiService.addOne(4);
-    Thread.sleep(2000);
 //    Assert.assertEquals(5, apiService.addOne(4));
 //    Assert.assertEquals("end", apiService.getList(Arrays.asList("123")).get(0));
 //    Assert.assertNotNull(apiService.getMap());
 //    Assert.assertEquals("this is a rpc framework", apiService.getString());
 //    Assert.assertEquals(new RaceDO(), apiService.getDO());
+//    Thread.sleep(5000);
   }
 
   @Test

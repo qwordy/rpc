@@ -3,6 +3,7 @@ package com.yfy.rpc.api;
 import com.yfy.rpc.aop.ConsumerHook;
 import com.yfy.rpc.async.ResponseCallbackListener;
 import com.yfy.rpc.model.RpcRequest;
+import com.yfy.rpc.netty.ClientHandler;
 import com.yfy.rpc.netty.RpcClient;
 import com.yfy.rpc.util.Util;
 import io.netty.channel.Channel;
@@ -15,6 +16,8 @@ public class RpcConsumer implements InvocationHandler {
   private Class<?> interfaceClazz;
 
   private Channel channel;
+
+  private String version, classSig;
 
   public RpcConsumer() {
   }
@@ -45,7 +48,7 @@ public class RpcConsumer implements InvocationHandler {
    * @return
    */
   public RpcConsumer version(String version) {
-    //TODO
+    this.version = version;
     return this;
   }
 
@@ -77,7 +80,9 @@ public class RpcConsumer implements InvocationHandler {
    * @return
    */
   public Object instance() {
-    channel = RpcClient.startClient();
+    channel = RpcClient.connect();
+    classSig = interfaceClazz.getName() + ' ' + version;
+    channel.writeAndFlush(new RpcRequest(classSig, null, null));
     return Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[]{this.interfaceClazz}, this);
   }
 
@@ -106,9 +111,9 @@ public class RpcConsumer implements InvocationHandler {
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-    RpcRequest request = new RpcRequest(method, args);
-    Util.log(method.toGenericString());
+    RpcRequest request = new RpcRequest(null, method.getName(), args);
     channel.writeAndFlush(request);
+    //Util.log(method.toGenericString());
 //    for (Method m : proxy.getClass().getDeclaredMethods())
 //      System.out.println(m.getName());
     return 1;

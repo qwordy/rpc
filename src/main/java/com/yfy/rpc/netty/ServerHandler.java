@@ -1,24 +1,42 @@
 package com.yfy.rpc.netty;
 
+import com.yfy.rpc.api.RpcProvider;
+import com.yfy.rpc.model.RpcRequest;
+import com.yfy.rpc.model.RpcResponse;
 import com.yfy.rpc.util.Util;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-
-import java.nio.charset.Charset;
+import io.netty.channel.SimpleChannelInboundHandler;
 
 /**
  * Created by yfy on 16-12-3.
  */
-public class ServerHandler extends ChannelInboundHandlerAdapter {
+public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
+  private RpcProvider provider;
+
   @Override
   public void channelActive(ChannelHandlerContext ctx) throws Exception {
     Util.log("channel active");
   }
 
   @Override
-  public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-    Util.log(((ByteBuf) msg).toString(Charset.defaultCharset()));
+  public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    Util.log("channel inactive");
+  }
+
+  @Override
+  protected void channelRead0(ChannelHandlerContext ctx, RpcRequest msg) throws Exception {
+    Util.log("read: " + msg);
+    if (provider == null) {
+      if (msg.classSig != null) {
+        provider = RpcServer.instance().getRpcProvider(msg.classSig);
+        if (provider == null) ctx.close();
+      } else {
+        ctx.close();
+      }
+    } else {
+      Object ret = provider.invoke(msg.methodName, msg.args);
+      ctx.writeAndFlush(new RpcResponse(ret, null));
+    }
   }
 
   @Override

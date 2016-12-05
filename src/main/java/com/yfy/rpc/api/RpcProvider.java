@@ -2,25 +2,25 @@ package com.yfy.rpc.api;
 
 import com.yfy.rpc.netty.RpcServer;
 
-/**
- * Created by huangsheng.hs on 2015/3/26.
- */
+import java.lang.reflect.Method;
+
 public class RpcProvider {
 
   private Class<?> serviceInterface;
 
   private Object serviceInstance;
 
-  private String version;
+  private String version, classSig;
 
-  public RpcProvider() {
+  public RpcProvider() {}
+
+  public String getClassSig() {
+    return classSig;
   }
 
-  /**
-   * init Provider
-   */
-  private void init() {
-    //TODO
+  public Object invoke(String methodName, Object[] args) {
+    //serviceInstance.getClass().getDeclaredMethod()
+    return null;
   }
 
   /**
@@ -49,7 +49,7 @@ public class RpcProvider {
    * @param serviceInstance
    */
   public RpcProvider impl(Object serviceInstance) {
-    //serviceInterface.cast(serviceInstance);
+//    serviceInterface.cast(serviceInstance);
     this.serviceInstance = serviceInstance;
     return this;
   }
@@ -81,6 +81,7 @@ public class RpcProvider {
    * you can use ZooKeeper as your registry server to make your services found by your consumers.
    */
   public void publish() {
-    RpcServer.startNewServer();
+    classSig = serviceInterface.getName() + ' ' + version;
+    RpcServer.instance().register(this);
   }
 }
