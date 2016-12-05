@@ -3,31 +3,30 @@ package com.yfy.rpc.api;
 import com.yfy.rpc.aop.ConsumerHook;
 import com.yfy.rpc.async.ResponseCallbackListener;
 import com.yfy.rpc.model.RpcRequest;
+import com.yfy.rpc.model.RpcResponse;
 import com.yfy.rpc.netty.ClientHandler;
 import com.yfy.rpc.netty.RpcClient;
-import com.yfy.rpc.util.Util;
 import io.netty.channel.Channel;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class RpcConsumer implements InvocationHandler {
   private Class<?> interfaceClazz;
 
   private Channel channel;
 
-  private String version, classSig;
+  private String version;
 
-  public RpcConsumer() {
-  }
+  private AtomicInteger requestId = new AtomicInteger();
 
-  /**
-   * init a rpc consumer
-   */
-  private void init() {
-    //TODO
-  }
+  private Map<Integer, Object> map = new ConcurrentHashMap<>();
+
+  public RpcConsumer() {}
 
   /**
    * set the interface which this consumer want to use
@@ -81,8 +80,9 @@ public class RpcConsumer implements InvocationHandler {
    */
   public Object instance() {
     channel = RpcClient.connect();
-    classSig = interfaceClazz.getName() + ' ' + version;
-    channel.writeAndFlush(new RpcRequest(classSig, null, null));
+    ((ClientHandler)channel.pipeline().last()).setConsumer(this);
+    String classSig = interfaceClazz.getName() + ' ' + version;
+    channel.writeAndFlush(new RpcRequest(0, classSig, null, null));
     return Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[]{this.interfaceClazz}, this);
   }
 
@@ -111,12 +111,21 @@ public class RpcConsumer implements InvocationHandler {
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-    RpcRequest request = new RpcRequest(null, method.getName(), args);
+    int id = requestId.getAndIncrement();
+    RpcRequest request = new RpcRequest(id, null, method.getName(), args);
+    map.put(id, request);
     channel.writeAndFlush(request);
-    //Util.log(method.toGenericString());
-//    for (Method m : proxy.getClass().getDeclaredMethods())
-//      System.out.println(m.getName());
-    return 1;
+    synchronized (request) {
+      if (map.get(id) instanceof RpcRequest)
+        request.wait();
+    }
+    Object result = ((RpcResponse)map.get(id)).result;
+    map.remove(id);
+    return result;
+  }
+
+  public Map<Integer, Object> getMap() {
+    return map;
   }
 }
 

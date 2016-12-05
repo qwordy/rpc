@@ -10,6 +10,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.util.CharsetUtil;
 
 /**
@@ -29,8 +30,11 @@ public class RpcClient {
         .handler(new ChannelInitializer<SocketChannel>() {
           @Override
           protected void initChannel(SocketChannel ch) throws Exception {
-            ch.pipeline().addLast(new ResponseDecoder())
-                .addLast(new RequestEncoder()).addLast(new ClientHandler());
+            ch.pipeline()
+                .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4))
+                .addLast(new ResponseDecoder())
+                .addLast(new RequestEncoder())
+                .addLast(new ClientHandler());
           }
         });
   }

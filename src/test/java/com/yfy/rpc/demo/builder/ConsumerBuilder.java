@@ -7,6 +7,9 @@ import com.yfy.rpc.demo.service.*;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class ConsumerBuilder {
@@ -49,13 +52,14 @@ public class ConsumerBuilder {
 
   @Test
   public void testNormalApiCall() {
-    apiService.addOne(4);
-//    Assert.assertEquals(5, apiService.addOne(4));
-//    Assert.assertEquals("end", apiService.getList(Arrays.asList("123")).get(0));
-//    Assert.assertNotNull(apiService.getMap());
-//    Assert.assertEquals("this is a rpc framework", apiService.getString());
-//    Assert.assertEquals(new RaceDO(), apiService.getDO());
-//    Thread.sleep(5000);
+//    apiService.addOne(4);
+    Assert.assertEquals(5, apiService.addOne(4));
+    List<String> list = new ArrayList<>();
+    list.add("123");
+    Assert.assertEquals("end", apiService.getList(list).get(0));
+    Assert.assertNotNull(apiService.getMap());
+    Assert.assertEquals("this is a rpc framework", apiService.getString());
+    Assert.assertEquals(new RaceDO(), apiService.getDO());
   }
 
   @Test

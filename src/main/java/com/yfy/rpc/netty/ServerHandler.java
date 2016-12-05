@@ -25,7 +25,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, RpcRequest msg) throws Exception {
-    Util.log("read: " + msg);
+    //Util.log("read: " + msg);
     if (provider == null) {
       if (msg.classSig != null) {
         provider = RpcServer.instance().getRpcProvider(msg.classSig);
@@ -34,8 +34,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
         ctx.close();
       }
     } else {
-      Object ret = provider.invoke(msg.methodName, msg.args);
-      ctx.writeAndFlush(new RpcResponse(ret, null));
+      ctx.writeAndFlush(provider.invoke(msg));
     }
   }
 

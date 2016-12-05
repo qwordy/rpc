@@ -14,7 +14,7 @@ public interface RaceTestService {
 
   public Integer throwException() throws RaceException;
 
-  public int addOne(int n);
+  public int addOne(Integer n);
 
   public List<String> getList(List<String> list);
 }

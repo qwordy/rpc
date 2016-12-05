@@ -3,13 +3,15 @@ package com.yfy.rpc.model;
 import java.util.Arrays;
 
 public class RpcRequest {
+  public int id;
   public String classSig; // class + version
   public String methodName;
   public Object[] args;
 
   public RpcRequest() {}
 
-  public RpcRequest(String classSig, String methodName, Object[] args) {
+  public RpcRequest(int id, String classSig, String methodName, Object[] args) {
+    this.id = id;
     this.classSig = classSig;
     this.methodName = methodName;
     this.args = args;
@@ -17,6 +19,6 @@ public class RpcRequest {
 
   @Override
   public String toString() {
-    return classSig + ' ' + methodName + ' ' + Arrays.toString(args);
+    return "classSig:" + classSig + " method:" + methodName + " args:" + Arrays.toString(args);
   }
 }

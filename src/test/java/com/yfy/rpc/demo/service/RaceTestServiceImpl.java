@@ -43,7 +43,7 @@ public class RaceTestServiceImpl implements RaceTestService {
   }
 
   @Override
-  public int addOne(int n) {
+  public int addOne(Integer n) {
     return n + 1;
   }
 

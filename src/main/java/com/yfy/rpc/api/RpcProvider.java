@@ -1,5 +1,7 @@
 package com.yfy.rpc.api;
 
+import com.yfy.rpc.model.RpcRequest;
+import com.yfy.rpc.model.RpcResponse;
 import com.yfy.rpc.netty.RpcServer;
 
 import java.lang.reflect.Method;
@@ -12,15 +14,30 @@ public class RpcProvider {
 
   private String version, classSig;
 
-  public RpcProvider() {}
+  public RpcProvider() {
+  }
 
   public String getClassSig() {
     return classSig;
   }
 
-  public Object invoke(String methodName, Object[] args) {
-    //serviceInstance.getClass().getDeclaredMethod()
-    return null;
+  public RpcResponse invoke(RpcRequest msg) {
+    Method[] methods = serviceInterface.getMethods();
+    Method m0 = null;
+    for (Method m : methods) {
+      if (m.getName().equals(msg.methodName)) {
+        m0 = m;
+        break;
+      }
+    }
+    if (m0 == null)
+      return new RpcResponse(msg.id, null, "NoSuchMethod");
+    try {
+      Object ret = m0.invoke(serviceInstance, msg.args);
+      return new RpcResponse(msg.id, ret, null);
+    } catch (Exception e) {
+      return new RpcResponse(msg.id, null, e.getMessage());
+    }
   }
 
   /**

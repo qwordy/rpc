@@ -1,18 +1,21 @@
 package com.yfy.rpc.model;
 
 public class RpcResponse {
-  private String errorMsg;
+  public int id;
+  public Object result;
+  public String errorMsg;
 
-  private Object result;
+  public RpcResponse() {}
 
-  public RpcResponse(Object result, String errorMsg) {
+  public RpcResponse(int id, Object result, String errorMsg) {
+    this.id = id;
     this.result = result;
     this.errorMsg = errorMsg;
   }
 
   @Override
   public String toString() {
-    return result + " " + errorMsg;
+    return "result:" + result + " errorMsg:" + errorMsg;
   }
 
   public Object getAppResponse() {
