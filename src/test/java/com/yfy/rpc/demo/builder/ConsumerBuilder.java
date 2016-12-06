@@ -4,6 +4,7 @@ import com.yfy.rpc.api.RpcConsumer;
 import com.yfy.rpc.async.ResponseFuture;
 import com.yfy.rpc.context.RpcContext;
 import com.yfy.rpc.demo.service.*;
+import com.yfy.rpc.util.Util;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -46,7 +47,11 @@ public class ConsumerBuilder {
 
   public static void main(String[] args) {
     ConsumerBuilder builder = new ConsumerBuilder();
-    builder.testNormalApiCall();
+//    builder.testNormalApiCall();
+//    builder.testNormalSpringCall();
+//    builder.testTimeoutCall();
+    builder.testCatchException();
+    Util.log("Done");
   }
 
   @Test
@@ -77,6 +82,7 @@ public class ConsumerBuilder {
     long beginTime = System.currentTimeMillis();
     try {
       boolean result = apiService.longTimeMethod();
+      Assert.fail();
     } catch (Exception e) {
       long period = System.currentTimeMillis() - beginTime;
       Assert.assertTrue(period < 3100);

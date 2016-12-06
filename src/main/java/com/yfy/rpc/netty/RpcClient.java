@@ -40,6 +40,6 @@ public class RpcClient {
   }
 
   public static Channel connect() {
-    return bootstrap.connect("localhost", 8888).syncUninterruptibly().channel();
+    return bootstrap.connect("localhost", 8989).syncUninterruptibly().channel();
   }
 }

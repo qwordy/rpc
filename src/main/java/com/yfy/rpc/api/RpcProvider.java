@@ -36,7 +36,7 @@ public class RpcProvider {
       Object ret = m0.invoke(serviceInstance, msg.args);
       return new RpcResponse(msg.id, ret, null);
     } catch (Exception e) {
-      return new RpcResponse(msg.id, null, e.getMessage());
+      return new RpcResponse(msg.id, e, "exception");
     }
   }
 

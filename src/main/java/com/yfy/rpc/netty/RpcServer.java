@@ -59,7 +59,7 @@ public class RpcServer {
         });
 //        .option(ChannelOption.SO_BACKLOG, 5)
 //        .childOption(ChannelOption.SO_KEEPALIVE, true);
-    b.bind(8888).syncUninterruptibly();
+    b.bind(8989).syncUninterruptibly();
   }
 
   public static void main(String[] args) throws Exception {

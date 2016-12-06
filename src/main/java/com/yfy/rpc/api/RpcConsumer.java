@@ -9,6 +9,7 @@ import com.yfy.rpc.netty.RpcClient;
 import io.netty.channel.Channel;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Map;
@@ -21,6 +22,8 @@ public class RpcConsumer implements InvocationHandler {
   private Channel channel;
 
   private String version;
+
+  private int timeout;
 
   private AtomicInteger requestId = new AtomicInteger();
 
@@ -59,7 +62,7 @@ public class RpcConsumer implements InvocationHandler {
    * @return
    */
   public RpcConsumer clientTimeout(int clientTimeout) {
-    //TODO
+    timeout = clientTimeout;
     return this;
   }
 
@@ -116,12 +119,23 @@ public class RpcConsumer implements InvocationHandler {
     map.put(id, request);
     channel.writeAndFlush(request);
     synchronized (request) {
-      if (map.get(id) instanceof RpcRequest)
-        request.wait();
+      while (map.get(id) instanceof RpcRequest) {
+        long time0 = System.nanoTime();
+        request.wait(timeout);
+        long time = System.nanoTime() - time0;
+        if (time > timeout * 1e6) throw new Exception("timeout");
+      }
     }
-    Object result = ((RpcResponse)map.get(id)).result;
+    RpcResponse response = ((RpcResponse)map.get(id));
+    if (response.isError()) {
+      try {
+        throw (Throwable) response.result;
+      } catch (InvocationTargetException e) {
+        throw e.getCause();
+      }
+    }
     map.remove(id);
-    return result;
+    return response.result;
   }
 
   public Map<Integer, Object> getMap() {
