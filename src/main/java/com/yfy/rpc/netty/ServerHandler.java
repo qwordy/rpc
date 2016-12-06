@@ -15,7 +15,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
   @Override
   public void channelActive(ChannelHandlerContext ctx) throws Exception {
-    Util.log("channel active");
+    Util.log("client connected: " + ctx.channel().remoteAddress());
   }
 
   @Override
@@ -35,6 +35,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
       }
     } else {
       ctx.writeAndFlush(provider.invoke(msg));
+//      LogicExecutor.run(() -> ctx.writeAndFlush(provider.invoke(msg)));
     }
   }
 

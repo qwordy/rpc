@@ -19,7 +19,7 @@ public class Util {
     Kryo kryo = new Kryo();
     Output output = new Output(1024, Integer.MAX_VALUE);
     kryo.writeObject(output, obj);
-    Util.log("encode(" + output.position() + "): " + obj);
+    //Util.log("encode(" + output.position() + "): " + obj);
     out.writeInt(output.position());
     out.writeBytes(output.toBytes());
   }
@@ -31,7 +31,7 @@ public class Util {
     in.readBytes(bytes);
     Input input = new Input(bytes);
     Object obj = kryo.readObject(input, clazz);
-    Util.log("decode(" + bytes.length + "): " + obj);
+    //Util.log("decode(" + bytes.length + "): " + obj);
     return obj;
   }
 }
