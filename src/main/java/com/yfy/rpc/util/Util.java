@@ -3,11 +3,8 @@ package com.yfy.rpc.util;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import io.netty.buffer.ByteBuf;
 import org.objenesis.strategy.StdInstantiatorStrategy;
-
-import java.util.Collections;
 
 /**
  * Created by yfy on 16-12-4.
