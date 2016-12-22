@@ -47,10 +47,10 @@ public class ConsumerBuilder {
 
   public static void main(String[] args) {
     ConsumerBuilder builder = new ConsumerBuilder();
-//    builder.testNormalApiCall();
-//    builder.testNormalSpringCall();
-//    builder.testTimeoutCall();
-    builder.testCatchException();
+    builder.testNormalApiCall();
+    builder.testNormalSpringCall();
+    builder.testTimeoutCall();
+//    builder.testCatchException();
     Util.log("Done");
   }
 
