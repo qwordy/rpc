@@ -1,8 +1,9 @@
 package com.yfy.rpc.model;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class RpcRequest {
+public class RpcRequest implements Serializable {
   public int id;
   public String classSig; // class + version
   public String methodName;

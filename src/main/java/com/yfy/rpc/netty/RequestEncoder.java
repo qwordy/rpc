@@ -12,6 +12,6 @@ import io.netty.handler.codec.MessageToByteEncoder;
 public class RequestEncoder extends MessageToByteEncoder<RpcRequest> {
   @Override
   protected void encode(ChannelHandlerContext ctx, RpcRequest msg, ByteBuf out) throws Exception {
-    Util.serialize(msg, out);
+    Util.hessianSerialize(msg, out);
   }
 }

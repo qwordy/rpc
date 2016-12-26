@@ -1,6 +1,8 @@
 package com.yfy.rpc.model;
 
-public class RpcResponse {
+import java.io.Serializable;
+
+public class RpcResponse implements Serializable {
   public int id;
   public Object result;
   public String errorMsg;

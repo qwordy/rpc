@@ -50,8 +50,9 @@ public class ConsumerBuilder {
     builder.testNormalApiCall();
     builder.testNormalSpringCall();
     builder.testTimeoutCall();
-//    builder.testCatchException();
-    Util.log("Done");
+    builder.testCatchException();
+    builder.testFutureCall();
+    Util.log("Pass all tests!");
   }
 
   @Test

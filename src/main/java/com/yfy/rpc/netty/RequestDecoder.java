@@ -14,6 +14,6 @@ import java.util.List;
 public class RequestDecoder extends ByteToMessageDecoder {
   @Override
   protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-    out.add(Util.deserialize(in, RpcRequest.class));
+    out.add(Util.hessianDeserialize(in, RpcRequest.class));
   }
 }
