@@ -2,18 +2,25 @@ package com.yfy.rpc.api;
 
 import com.yfy.rpc.aop.ConsumerHook;
 import com.yfy.rpc.async.ResponseCallbackListener;
+import com.yfy.rpc.async.ResponseFuture;
 import com.yfy.rpc.model.RpcRequest;
 import com.yfy.rpc.model.RpcResponse;
 import com.yfy.rpc.netty.ClientHandler;
 import com.yfy.rpc.netty.RpcClient;
+import com.yfy.rpc.util.Util;
 import io.netty.channel.Channel;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RpcConsumer implements InvocationHandler {
@@ -21,13 +28,15 @@ public class RpcConsumer implements InvocationHandler {
 
   private Channel channel;
 
-  private String version;
+  private String version, asynMethod;
 
   private int timeout;
 
   private AtomicInteger requestId = new AtomicInteger();
 
   private Map<Integer, Object> map = new ConcurrentHashMap<>();
+
+  private ResponseCallbackListener listener;
 
   public RpcConsumer() {}
 
@@ -105,11 +114,13 @@ public class RpcConsumer implements InvocationHandler {
    * @param callbackListener
    */
   public <T extends ResponseCallbackListener> void asynCall(String methodName, T callbackListener) {
-    //TODO
+    asynMethod = methodName;
+    listener = callbackListener;
   }
 
   public void cancelAsyn(String methodName) {
-    //TODO
+    asynMethod = null;
+    listener = null;
   }
 
   @Override
@@ -118,12 +129,30 @@ public class RpcConsumer implements InvocationHandler {
     RpcRequest request = new RpcRequest(id, null, method.getName(), args);
     map.put(id, request);
     channel.writeAndFlush(request);
+    if (method.getName().equals(asynMethod)) {
+      FutureTask<Object> futureTask = new FutureTask<>(new Callable<Object>() {
+        @Override
+        public Object call() throws Exception {
+          synchronized (request) {
+            while (map.get(id) instanceof RpcRequest)
+              request.wait();
+          }
+          RpcResponse rpcResponse = (RpcResponse) map.get(id);
+          if (listener != null)
+            listener.onResponse(rpcResponse.getAppResponse());
+          return map.get(id);
+        }
+      });
+      new Thread(futureTask).start();
+      ResponseFuture.futureThreadLocal.set(futureTask);
+      return null;
+    }
     synchronized (request) {
       while (map.get(id) instanceof RpcRequest) {
-        long time0 = System.nanoTime();
+        long time0 = System.currentTimeMillis();
         request.wait(timeout);
-        long time = System.nanoTime() - time0;
-        if (time > timeout * 1e6) throw new Exception("timeout");
+        long time = System.currentTimeMillis() - time0;
+        if (time >= timeout) throw new Exception("timeout");
       }
     }
     RpcResponse response = ((RpcResponse)map.get(id));

@@ -52,6 +52,8 @@ public class ConsumerBuilder {
     builder.testTimeoutCall();
     builder.testCatchException();
     builder.testFutureCall();
+    builder.testCallback();
+    builder.testRpcContext();
     Util.log("Pass all tests!");
   }
 
@@ -101,7 +103,7 @@ public class ConsumerBuilder {
       Assert.fail();
     } catch (RaceException e) {
       Assert.assertEquals("race", e.getFlag());
-      e.printStackTrace();
+      //e.printStackTrace();
     }
   }
 
