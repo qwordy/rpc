@@ -130,18 +130,15 @@ public class RpcConsumer implements InvocationHandler {
     map.put(id, request);
     channel.writeAndFlush(request);
     if (method.getName().equals(asynMethod)) {
-      FutureTask<Object> futureTask = new FutureTask<>(new Callable<Object>() {
-        @Override
-        public Object call() throws Exception {
-          synchronized (request) {
-            while (map.get(id) instanceof RpcRequest)
-              request.wait();
-          }
-          RpcResponse rpcResponse = (RpcResponse) map.get(id);
-          if (listener != null)
-            listener.onResponse(rpcResponse.getAppResponse());
-          return map.get(id);
+      FutureTask<Object> futureTask = new FutureTask<>(() -> {
+        synchronized (request) {
+          while (map.get(id) instanceof RpcRequest)
+            request.wait();
         }
+        RpcResponse rpcResponse = (RpcResponse) map.get(id);
+        if (listener != null)
+          listener.onResponse(rpcResponse.getAppResponse());
+        return map.get(id);
       });
       new Thread(futureTask).start();
       ResponseFuture.futureThreadLocal.set(futureTask);
